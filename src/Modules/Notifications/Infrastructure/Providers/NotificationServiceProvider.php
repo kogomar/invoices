@@ -8,23 +8,29 @@ use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use Modules\Notifications\Api\NotificationFacadeInterface;
 use Modules\Notifications\Application\Facades\NotificationFacade;
+use Modules\Notifications\Infrastructure\Drivers\DriverInterface;
 use Modules\Notifications\Infrastructure\Drivers\DummyDriver;
+use Psr\Log\LoggerInterface;
 
 final class NotificationServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function register(): void
     {
-        $this->app->scoped(NotificationFacadeInterface::class, NotificationFacade::class);
+        $this->app->singleton(DriverInterface::class, DummyDriver::class);
 
-        $this->app->singleton(NotificationFacade::class, static fn ($app) => new NotificationFacade(
-            driver: $app->make(DummyDriver::class),
-        ));
+        $this->app->singleton(NotificationFacadeInterface::class, function ($app) {
+            return new NotificationFacade(
+                driver: $app->make(DriverInterface::class),
+                logger: $app->make(LoggerInterface::class),
+            );
+        });
     }
 
     /** @return array<class-string> */
     public function provides(): array
     {
         return [
+            DriverInterface::class,
             NotificationFacadeInterface::class,
         ];
     }

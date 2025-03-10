@@ -10,6 +10,7 @@ use Modules\Notifications\Api\Dtos\NotifyData;
 use Modules\Notifications\Application\Facades\NotificationFacade;
 use Modules\Notifications\Infrastructure\Drivers\DriverInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 final class NotificationFacadeTest extends TestCase
 {
@@ -24,8 +25,11 @@ final class NotificationFacadeTest extends TestCase
         $this->setUpFaker();
 
         $this->driver = $this->createMock(DriverInterface::class);
+        $this->driver->method('send')->willReturn(true);
+
         $this->notificationFacade = new NotificationFacade(
             driver: $this->driver,
+            logger: $this->createMock(LoggerInterface::class)
         );
     }
 

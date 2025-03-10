@@ -24,7 +24,7 @@ class NotificationControllerTest extends TestCase
     {
         $uri = route('notification.hook', [
             'action' => $action,
-            'reference' => $this->faker->uuid,
+            'resourceId' => $this->faker->uuid,
         ]);
 
         $this->getJson($uri)->assertOk();
@@ -34,7 +34,7 @@ class NotificationControllerTest extends TestCase
     {
         $params = [
             'action' => 'dummy',
-            'reference' => $this->faker->numberBetween(),
+            'resourceId' => $this->faker->numberBetween(),
         ];
 
         $uri = route('notification.hook', $params);
